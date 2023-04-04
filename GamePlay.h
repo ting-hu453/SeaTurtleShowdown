@@ -1,0 +1,1317 @@
+#pragma once
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <cstdlib>
+#include <crtdbg.h>
+#include <vcclr.h>
+#include <ctime>
+#include "Turtle.h"
+#include "BonusObjects.h"
+#include "BonusList.h"
+#include "myPanel.h"
+#include "HelpForm.h"
+
+//TODO: Verify destructor and prevent memory leaks -BonusObjects, MainMenu, TurtleSettings complete -Maybe GamePlay as well
+//TODO: Code Clean up - remove commented code
+//TODO: Comments -BonusObjects, MainMenu, TurtleSettings complete -Maybe GamePlay as well
+//TODO: Check health
+
+namespace SeaTurtleShowdown 
+{
+	using namespace System;
+	using namespace System::ComponentModel;
+	using namespace System::Collections;
+	using namespace System::Windows::Forms;
+	using namespace System::Data;
+	using namespace System::Drawing;
+
+	/// <summary>
+	/// Summary for GamePlay
+	/// </summary>
+	public ref class GamePlay : public System::Windows::Forms::Form
+	{
+	public:
+      //-----------------------------------------------------------------------
+      // Parameterized constructor
+      //-----------------------------------------------------------------------
+		GamePlay(double inSize, int selection)
+		{
+			InitializeComponent();
+
+         //seed the random number generator
+         srand(time(NULL));
+
+         //Double Buffer the GamePlayScreen panel
+         static_cast<MyPanel^>(gamePlayScreen)->SetStyle(ControlStyles::UserPaint, true);
+         static_cast<MyPanel^>(gamePlayScreen)->SetStyle(ControlStyles::AllPaintingInWmPaint, true);
+         static_cast<MyPanel^>(gamePlayScreen)->SetStyle(ControlStyles::OptimizedDoubleBuffer, true);
+
+         //Create image to add to GamePlayScreen panel
+         beachImage = gcnew Drawing::Bitmap("GameBackground.bmp");
+
+         //Create a turtle object and a list to store bonuses
+         turtle = new Turtle(inSize, selection, WATERLINE, gamePlayScreen);
+         bonusList = new BonusList();
+
+         //Initialize key down flag to false
+         keyDown = false;
+
+         //Create three predators and store in list
+         bonus = new Predator(PRED_1_X, PRED_1_Y, 1, gamePlayScreen);
+         bonusList->pushBack(bonus);
+         bonus = new Predator(PRED_2_X, PRED_2_Y, -1, gamePlayScreen);
+         bonusList->pushBack(bonus);
+         bonus = new Predator(PRED_3_X, PRED_3_Y, 1, gamePlayScreen);
+         bonusList->pushBack(bonus);
+
+         //Playing ocean sound in game play - Do not remove :)
+         //oceanSound = gcnew Media::SoundPlayer("oceanwave.wav");
+         //oceanSound->Load();
+         //oceanSound->PlayLooping();
+		}
+
+	protected:
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+      //-----------------------------------------------------------------------
+      // Default Destructor
+      //-----------------------------------------------------------------------
+		~GamePlay()
+		{
+			if (components)
+				delete components;
+         if (bonusList != nullptr)
+         {
+            delete bonusList;
+            bonusList = nullptr;
+         }
+         if (beachImage != nullptr)
+         {
+            delete beachImage;
+            beachImage = nullptr;
+         }
+         if (turtle != nullptr)
+         {
+            delete turtle;
+            turtle = nullptr;
+         }
+         if (bonus != nullptr)
+         {
+            delete bonus;
+            bonus = nullptr;
+         }
+         if (oceanSound != nullptr)
+         {
+            delete oceanSound;
+            oceanSound = nullptr;
+         }
+		}
+
+   private:
+      //-----------------------------------------------------------------------
+      // Declaring local object pointers, constants, and variables
+      //-----------------------------------------------------------------------
+      //Constants for initializing Predators
+      const int PRED_1_X = 400;
+      const int PRED_1_Y = 500;
+      const int PRED_2_X = 600;
+      const int PRED_2_Y = 300;
+      const int PRED_3_X = 800;
+      const int PRED_3_Y = 80;
+      //Constant for finish line
+      const int WATERLINE = 1100;
+      //Constant for health decrease
+      const int NEG_HEALTH_RATE = 5;
+      //Constants for boundaries of where bonuses can be generated
+      const int BONUS_X_LOW_BOUND = 10;
+      const int BONUS_X_UP_BOUND = 1000;
+      const int BONUS_Y_LOW_BOUND = 40;
+      //Constants for trash generation
+      const int TRASH_COUNT_MIN = 15;
+      const int TRASH_COUNT_MAX = 30;
+      //Constants for key press
+      const int UP_KEY_VAL = 0;
+      const int DN_KEY_VAL = 1;
+      const int LFT_KEY_VAL = 2;
+      const int RT_KEY_VAL = 3;
+      //Constant for increasing trash can value
+      const int TRASH_INCREMENT = 10;
+      //Constant for number of bonus created when trashcan full
+      const int NUM_BONUS_LOOP = 5;
+      //Object Pointers
+      Turtle* turtle;
+      BonusList* bonusList;
+      Bonus* bonus;
+      //Variable for tracking trash quantity
+      int trashCanQty;
+      //Image for gameplay
+      Bitmap^ beachImage;
+      //Flag for Key Down event handler
+      bool keyDown;
+
+   private: System::Media::SoundPlayer^ oceanSound;
+   private: System::Windows::Forms::Panel^  gamePlayScreen;
+   private: System::Windows::Forms::ProgressBar^  turtleHealth;
+   private: System::Windows::Forms::PictureBox^  pictureBox1;
+   private: System::Windows::Forms::Timer^  powerupTimer;
+   private: System::Windows::Forms::Timer^  trashTimer;
+private: System::Windows::Forms::Timer^  bonusMoveTimer;
+
+   private: System::Windows::Forms::Timer^  healthTimer;
+   private: System::Windows::Forms::ProgressBar^  amountTrashTracker;
+   private: System::Windows::Forms::MenuStrip^  menuStrip1;
+   private: System::Windows::Forms::ToolStripMenuItem^  mainMenuToolStripMenuItem;
+   private: System::Windows::Forms::ToolStripMenuItem^  helpToolStripMenuItem;
+<<<<<<< .mine
+    private: System::Windows::Forms::TextBox^ speedQTY;
+    private: System::Windows::Forms::PictureBox^ pictureBox2;
+||||||| .r88412
+<<<<<<< .mine
+    private: System::Windows::Forms::TextBox^ speedQTY;
+    private: System::Windows::Forms::PictureBox^ pictureBox2;
+||||||| .r88353
+=======
+=======
+>>>>>>> .r88457
+   private: System::Windows::Forms::Timer^  keyPressTimer;
+<<<<<<< .mine
+<<<<<<< .mine
+
+
+||||||| .r88412
+>>>>>>> .r88355
+
+
+=======
+>>>>>>> .r88457
+||||||| .r88554
+=======
+private: System::Windows::Forms::TextBox^  speedQty;
+private: System::Windows::Forms::PictureBox^  pictureBox2;
+private: System::Windows::Forms::Label^  negativePowerLabel;
+private: System::Windows::Forms::Label^  maxLabel;
+>>>>>>> .r88602
+   private: System::ComponentModel::IContainer^  components;
+   protected:
+
+	private:
+		/// <summary>
+		/// Required designer variable.
+		/// </summary>
+
+#pragma region Windows Form Designer generated code
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		void InitializeComponent(void)
+		{
+<<<<<<< .mine
+            this->components = (gcnew System::ComponentModel::Container());
+            System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(GamePlay::typeid));
+            this->gamePlayScreen = (gcnew System::Windows::Forms::Panel());
+            this->amountTrashTracker = (gcnew System::Windows::Forms::ProgressBar());
+            this->healthTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->turtleHealth = (gcnew System::Windows::Forms::ProgressBar());
+            this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+            this->powerupTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->trashTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->powerUpMoveTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
+            this->mainMenuToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->speedQTY = (gcnew System::Windows::Forms::TextBox());
+            this->pictureBox2 = (gcnew System::Windows::Forms::PictureBox());
+            this->keyPressTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->gamePlayScreen->SuspendLayout();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+            this->menuStrip1->SuspendLayout();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->BeginInit();
+            this->SuspendLayout();
+            // 
+            // gamePlayScreen
+            // 
+            this->gamePlayScreen->AutoSize = true;
+            this->gamePlayScreen->BackColor = System::Drawing::Color::Transparent;
+            this->gamePlayScreen->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+            this->gamePlayScreen->Controls->Add(this->amountTrashTracker);
+            this->gamePlayScreen->Location = System::Drawing::Point(8, 38);
+            this->gamePlayScreen->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->gamePlayScreen->MaximumSize = System::Drawing::Size(1394, 604);
+            this->gamePlayScreen->MinimumSize = System::Drawing::Size(1394, 604);
+            this->gamePlayScreen->Name = L"gamePlayScreen";
+            this->gamePlayScreen->Size = System::Drawing::Size(1394, 604);
+            this->gamePlayScreen->TabIndex = 0;
+            this->gamePlayScreen->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &GamePlay::gamePlayScreen_Paint);
+            // 
+            // amountTrashTracker
+            // 
+            this->amountTrashTracker->BackColor = System::Drawing::SystemColors::Control;
+            this->amountTrashTracker->Location = System::Drawing::Point(1286, 590);
+            this->amountTrashTracker->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->amountTrashTracker->Name = L"amountTrashTracker";
+            this->amountTrashTracker->Size = System::Drawing::Size(99, 12);
+            this->amountTrashTracker->TabIndex = 1;
+            // 
+            // healthTimer
+            // 
+            this->healthTimer->Enabled = true;
+            this->healthTimer->Interval = 800;
+            this->healthTimer->Tick += gcnew System::EventHandler(this, &GamePlay::healthTimer_Tick);
+            // 
+            // turtleHealth
+            // 
+            this->turtleHealth->BackColor = System::Drawing::SystemColors::Control;
+            this->turtleHealth->Location = System::Drawing::Point(202, 11);
+            this->turtleHealth->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->turtleHealth->Name = L"turtleHealth";
+            this->turtleHealth->Size = System::Drawing::Size(106, 19);
+            this->turtleHealth->TabIndex = 1;
+            this->turtleHealth->Value = 100;
+            // 
+            // pictureBox1
+            // 
+            this->pictureBox1->BackColor = System::Drawing::Color::Transparent;
+            this->pictureBox1->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox1.BackgroundImage")));
+            this->pictureBox1->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+            this->pictureBox1->Location = System::Drawing::Point(170, 7);
+            this->pictureBox1->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->pictureBox1->Name = L"pictureBox1";
+            this->pictureBox1->Size = System::Drawing::Size(30, 26);
+            this->pictureBox1->TabIndex = 2;
+            this->pictureBox1->TabStop = false;
+            // 
+            // powerupTimer
+            // 
+            this->powerupTimer->Enabled = true;
+            this->powerupTimer->Interval = 3000;
+            this->powerupTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerupTimer_Tick);
+            // 
+            // trashTimer
+            // 
+            this->trashTimer->Enabled = true;
+            this->trashTimer->Interval = 2000;
+            this->trashTimer->Tick += gcnew System::EventHandler(this, &GamePlay::trashTimer_Tick);
+            // 
+            // powerUpMoveTimer
+            // 
+            this->powerUpMoveTimer->Enabled = true;
+            this->powerUpMoveTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerUpMoveTimer_Tick);
+            // 
+            // menuStrip1
+            // 
+            this->menuStrip1->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+            this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
+            this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+                this->mainMenuToolStripMenuItem,
+                    this->helpToolStripMenuItem
+            });
+            this->menuStrip1->Location = System::Drawing::Point(0, 0);
+            this->menuStrip1->Name = L"menuStrip1";
+            this->menuStrip1->Padding = System::Windows::Forms::Padding(4, 2, 0, 2);
+            this->menuStrip1->Size = System::Drawing::Size(1413, 27);
+            this->menuStrip1->TabIndex = 3;
+            this->menuStrip1->Text = L"menuStrip1";
+            // 
+            // mainMenuToolStripMenuItem
+            // 
+            this->mainMenuToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                static_cast<System::Byte>(0)));
+            this->mainMenuToolStripMenuItem->Name = L"mainMenuToolStripMenuItem";
+            this->mainMenuToolStripMenuItem->Size = System::Drawing::Size(92, 23);
+            this->mainMenuToolStripMenuItem->Text = L"Main Menu";
+            this->mainMenuToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::mainMenuToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this->helpToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                static_cast<System::Byte>(0)));
+            this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
+            this->helpToolStripMenuItem->Size = System::Drawing::Size(49, 23);
+            this->helpToolStripMenuItem->Text = L"Help";
+            this->helpToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::helpToolStripMenuItem_Click);
+            // 
+            // speedQTY
+            // 
+            this->speedQTY->Location = System::Drawing::Point(0, 0);
+            this->speedQTY->Name = L"speedQTY";
+            this->speedQTY->Size = System::Drawing::Size(100, 20);
+            this->speedQTY->TabIndex = 0;
+            // 
+            // pictureBox2
+            // 
+            this->pictureBox2->Location = System::Drawing::Point(0, 0);
+            this->pictureBox2->Name = L"pictureBox2";
+            this->pictureBox2->Size = System::Drawing::Size(100, 50);
+            this->pictureBox2->TabIndex = 0;
+            this->pictureBox2->TabStop = false;
+            // 
+            // keyPressTimer
+            // 
+            this->keyPressTimer->Enabled = true;
+            this->keyPressTimer->Interval = 1;
+            this->keyPressTimer->Tick += gcnew System::EventHandler(this, &GamePlay::keyPressTimer_Tick);
+            // 
+            // GamePlay
+            // 
+            this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
+            this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+            this->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+            this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+            this->ClientSize = System::Drawing::Size(1413, 659);
+            this->Controls->Add(this->pictureBox1);
+            this->Controls->Add(this->turtleHealth);
+            this->Controls->Add(this->gamePlayScreen);
+            this->Controls->Add(this->menuStrip1);
+            this->DoubleBuffered = true;
+            this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
+            this->MainMenuStrip = this->menuStrip1;
+            this->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->MaximumSize = System::Drawing::Size(1429, 698);
+            this->MinimumSize = System::Drawing::Size(1429, 698);
+            this->Name = L"GamePlay";
+            this->Text = L"Sea Turtle Showdown";
+            this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+            this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &GamePlay::GamePlay_FormClosed);
+            this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &GamePlay::GamePlay_KeyDown);
+            this->gamePlayScreen->ResumeLayout(false);
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+            this->menuStrip1->ResumeLayout(false);
+            this->menuStrip1->PerformLayout();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->EndInit();
+            this->ResumeLayout(false);
+            this->PerformLayout();
+||||||| .r88412
+<<<<<<< .mine
+            this->components = (gcnew System::ComponentModel::Container());
+            System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(GamePlay::typeid));
+            this->gamePlayScreen = (gcnew System::Windows::Forms::Panel());
+            this->amountTrashTracker = (gcnew System::Windows::Forms::ProgressBar());
+            this->healthTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->turtleHealth = (gcnew System::Windows::Forms::ProgressBar());
+            this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+            this->powerupTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->trashTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->powerUpMoveTimer = (gcnew System::Windows::Forms::Timer(this->components));
+            this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
+            this->mainMenuToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->speedQTY = (gcnew System::Windows::Forms::TextBox());
+            this->pictureBox2 = (gcnew System::Windows::Forms::PictureBox());
+            this->gamePlayScreen->SuspendLayout();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+            this->menuStrip1->SuspendLayout();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->BeginInit();
+            this->SuspendLayout();
+            // 
+            // gamePlayScreen
+            // 
+            this->gamePlayScreen->AutoSize = true;
+            this->gamePlayScreen->BackColor = System::Drawing::Color::Transparent;
+            this->gamePlayScreen->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+            this->gamePlayScreen->Controls->Add(this->amountTrashTracker);
+            this->gamePlayScreen->Location = System::Drawing::Point(8, 38);
+            this->gamePlayScreen->Margin = System::Windows::Forms::Padding(2);
+            this->gamePlayScreen->MaximumSize = System::Drawing::Size(1394, 604);
+            this->gamePlayScreen->MinimumSize = System::Drawing::Size(1394, 604);
+            this->gamePlayScreen->Name = L"gamePlayScreen";
+            this->gamePlayScreen->Size = System::Drawing::Size(1394, 604);
+            this->gamePlayScreen->TabIndex = 0;
+            this->gamePlayScreen->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &GamePlay::gamePlayScreen_Paint);
+            // 
+            // amountTrashTracker
+            // 
+            this->amountTrashTracker->BackColor = System::Drawing::SystemColors::Control;
+            this->amountTrashTracker->Location = System::Drawing::Point(1286, 590);
+            this->amountTrashTracker->Margin = System::Windows::Forms::Padding(2);
+            this->amountTrashTracker->Name = L"amountTrashTracker";
+            this->amountTrashTracker->Size = System::Drawing::Size(99, 12);
+            this->amountTrashTracker->TabIndex = 1;
+            // 
+            // healthTimer
+            // 
+            this->healthTimer->Interval = 550;
+            this->healthTimer->Tick += gcnew System::EventHandler(this, &GamePlay::healthTimer_Tick);
+            // 
+            // turtleHealth
+            // 
+            this->turtleHealth->BackColor = System::Drawing::SystemColors::Control;
+            this->turtleHealth->Location = System::Drawing::Point(202, 11);
+            this->turtleHealth->Margin = System::Windows::Forms::Padding(2);
+            this->turtleHealth->Name = L"turtleHealth";
+            this->turtleHealth->Size = System::Drawing::Size(106, 19);
+            this->turtleHealth->TabIndex = 1;
+            this->turtleHealth->Value = 100;
+            // 
+            // pictureBox1
+            // 
+            this->pictureBox1->BackColor = System::Drawing::Color::Transparent;
+            this->pictureBox1->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox1.BackgroundImage")));
+            this->pictureBox1->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+            this->pictureBox1->Location = System::Drawing::Point(170, 7);
+            this->pictureBox1->Margin = System::Windows::Forms::Padding(2);
+            this->pictureBox1->Name = L"pictureBox1";
+            this->pictureBox1->Size = System::Drawing::Size(30, 26);
+            this->pictureBox1->TabIndex = 2;
+            this->pictureBox1->TabStop = false;
+            // 
+            // powerupTimer
+            // 
+            this->powerupTimer->Enabled = true;
+            this->powerupTimer->Interval = 3000;
+            this->powerupTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerupTimer_Tick);
+            // 
+            // trashTimer
+            // 
+            this->trashTimer->Enabled = true;
+            this->trashTimer->Interval = 2000;
+            this->trashTimer->Tick += gcnew System::EventHandler(this, &GamePlay::trashTimer_Tick);
+            // 
+            // powerUpMoveTimer
+            // 
+            this->powerUpMoveTimer->Enabled = true;
+            this->powerUpMoveTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerUpMoveTimer_Tick);
+            // 
+            // menuStrip1
+            // 
+            this->menuStrip1->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+            this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
+            this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+                this->mainMenuToolStripMenuItem,
+                    this->helpToolStripMenuItem
+            });
+            this->menuStrip1->Location = System::Drawing::Point(0, 0);
+            this->menuStrip1->Name = L"menuStrip1";
+            this->menuStrip1->Padding = System::Windows::Forms::Padding(4, 2, 0, 2);
+            this->menuStrip1->Size = System::Drawing::Size(1413, 27);
+            this->menuStrip1->TabIndex = 3;
+            this->menuStrip1->Text = L"menuStrip1";
+            // 
+            // mainMenuToolStripMenuItem
+            // 
+            this->mainMenuToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                static_cast<System::Byte>(0)));
+            this->mainMenuToolStripMenuItem->Name = L"mainMenuToolStripMenuItem";
+            this->mainMenuToolStripMenuItem->Size = System::Drawing::Size(92, 23);
+            this->mainMenuToolStripMenuItem->Text = L"Main Menu";
+            this->mainMenuToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::mainMenuToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this->helpToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                static_cast<System::Byte>(0)));
+            this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
+            this->helpToolStripMenuItem->Size = System::Drawing::Size(49, 23);
+            this->helpToolStripMenuItem->Text = L"Help";
+            this->helpToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::helpToolStripMenuItem_Click);
+            // 
+            // speedQTY
+            // 
+            this->speedQTY->Enabled = false;
+            this->speedQTY->Location = System::Drawing::Point(407, 10);
+            this->speedQTY->Name = L"speedQTY";
+            this->speedQTY->ReadOnly = true;
+            this->speedQTY->Size = System::Drawing::Size(28, 20);
+            this->speedQTY->TabIndex = 2;
+            // 
+            // pictureBox2
+            // 
+            this->pictureBox2->BackColor = System::Drawing::Color::Transparent;
+            this->pictureBox2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox2.BackgroundImage")));
+            this->pictureBox2->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+            this->pictureBox2->Location = System::Drawing::Point(380, 7);
+            this->pictureBox2->Name = L"pictureBox2";
+            this->pictureBox2->Size = System::Drawing::Size(30, 26);
+            this->pictureBox2->TabIndex = 4;
+            this->pictureBox2->TabStop = false;
+            // 
+            // GamePlay
+            // 
+            this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
+            this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+            this->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+            this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+            this->ClientSize = System::Drawing::Size(1413, 659);
+            this->Controls->Add(this->pictureBox2);
+            this->Controls->Add(this->speedQTY);
+            this->Controls->Add(this->pictureBox1);
+            this->Controls->Add(this->turtleHealth);
+            this->Controls->Add(this->gamePlayScreen);
+            this->Controls->Add(this->menuStrip1);
+            this->DoubleBuffered = true;
+            this->MainMenuStrip = this->menuStrip1;
+            this->Margin = System::Windows::Forms::Padding(2);
+            this->MaximumSize = System::Drawing::Size(1429, 698);
+            this->MinimumSize = System::Drawing::Size(1429, 698);
+            this->Name = L"GamePlay";
+            this->Text = L"Sea Turtle Showdown";
+            this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+            this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &GamePlay::GamePlay_FormClosed);
+            this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &GamePlay::GamePlay_KeyDown);
+            this->gamePlayScreen->ResumeLayout(false);
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+            this->menuStrip1->ResumeLayout(false);
+            this->menuStrip1->PerformLayout();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->EndInit();
+            this->ResumeLayout(false);
+            this->PerformLayout();
+||||||| .r88353
+         this->components = (gcnew System::ComponentModel::Container());
+         System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(GamePlay::typeid));
+         this->gamePlayScreen = (gcnew System::Windows::Forms::Panel());
+         this->amountTrashTracker = (gcnew System::Windows::Forms::ProgressBar());
+         this->healthTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->turtleHealth = (gcnew System::Windows::Forms::ProgressBar());
+         this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+         this->powerupTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->trashTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->bonusMoveTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
+         this->mainMenuToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+         this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+         this->gamePlayScreen->SuspendLayout();
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+         this->menuStrip1->SuspendLayout();
+         this->SuspendLayout();
+         // 
+         // gamePlayScreen
+         // 
+         this->gamePlayScreen->AutoSize = true;
+         this->gamePlayScreen->BackColor = System::Drawing::Color::Transparent;
+         this->gamePlayScreen->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->gamePlayScreen->Controls->Add(this->amountTrashTracker);
+         this->gamePlayScreen->Location = System::Drawing::Point(10, 47);
+         this->gamePlayScreen->MaximumSize = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->MinimumSize = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->Name = L"gamePlayScreen";
+         this->gamePlayScreen->Size = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->TabIndex = 0;
+         this->gamePlayScreen->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &GamePlay::gamePlayScreen_Paint);
+         // 
+         // amountTrashTracker
+         // 
+         this->amountTrashTracker->BackColor = System::Drawing::SystemColors::Control;
+         this->amountTrashTracker->Location = System::Drawing::Point(1714, 726);
+         this->amountTrashTracker->Name = L"amountTrashTracker";
+         this->amountTrashTracker->Size = System::Drawing::Size(132, 15);
+         this->amountTrashTracker->TabIndex = 1;
+         // 
+         // healthTimer
+         // 
+         this->healthTimer->Enabled = true;
+         this->healthTimer->Interval = 550;
+         this->healthTimer->Tick += gcnew System::EventHandler(this, &GamePlay::healthTimer_Tick);
+         // 
+         // turtleHealth
+         // 
+         this->turtleHealth->BackColor = System::Drawing::SystemColors::Control;
+         this->turtleHealth->Location = System::Drawing::Point(270, 13);
+         this->turtleHealth->Name = L"turtleHealth";
+         this->turtleHealth->Size = System::Drawing::Size(142, 23);
+         this->turtleHealth->TabIndex = 1;
+         this->turtleHealth->Value = 100;
+         // 
+         // pictureBox1
+         // 
+         this->pictureBox1->BackColor = System::Drawing::Color::Transparent;
+         this->pictureBox1->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox1.BackgroundImage")));
+         this->pictureBox1->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->pictureBox1->Location = System::Drawing::Point(226, 9);
+         this->pictureBox1->Name = L"pictureBox1";
+         this->pictureBox1->Size = System::Drawing::Size(40, 32);
+         this->pictureBox1->TabIndex = 2;
+         this->pictureBox1->TabStop = false;
+         // 
+         // powerupTimer
+         // 
+         this->powerupTimer->Enabled = true;
+         this->powerupTimer->Interval = 3000;
+         this->powerupTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerupTimer_Tick);
+         // 
+         // trashTimer
+         // 
+         this->trashTimer->Enabled = true;
+         this->trashTimer->Interval = 2000;
+         this->trashTimer->Tick += gcnew System::EventHandler(this, &GamePlay::trashTimer_Tick);
+         // 
+         // powerUpMoveTimer
+         // 
+         this->powerUpMoveTimer->Enabled = true;
+         this->powerUpMoveTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerUpMoveTimer_Tick);
+         // 
+         // menuStrip1
+         // 
+         this->menuStrip1->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+         this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
+         this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+            this->mainMenuToolStripMenuItem,
+               this->helpToolStripMenuItem
+         });
+         this->menuStrip1->Location = System::Drawing::Point(0, 0);
+         this->menuStrip1->Name = L"menuStrip1";
+         this->menuStrip1->Size = System::Drawing::Size(1882, 31);
+         this->menuStrip1->TabIndex = 3;
+         this->menuStrip1->Text = L"menuStrip1";
+         // 
+         // mainMenuToolStripMenuItem
+         // 
+         this->mainMenuToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+            static_cast<System::Byte>(0)));
+         this->mainMenuToolStripMenuItem->Name = L"mainMenuToolStripMenuItem";
+         this->mainMenuToolStripMenuItem->Size = System::Drawing::Size(109, 27);
+         this->mainMenuToolStripMenuItem->Text = L"Main Menu";
+         this->mainMenuToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::mainMenuToolStripMenuItem_Click);
+         // 
+         // helpToolStripMenuItem
+         // 
+         this->helpToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+            static_cast<System::Byte>(0)));
+         this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
+         this->helpToolStripMenuItem->Size = System::Drawing::Size(57, 27);
+         this->helpToolStripMenuItem->Text = L"Help";
+         this->helpToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::helpToolStripMenuItem_Click);
+         // 
+         // GamePlay
+         // 
+         this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+         this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+         this->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+         this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->ClientSize = System::Drawing::Size(1882, 803);
+         this->Controls->Add(this->pictureBox1);
+         this->Controls->Add(this->turtleHealth);
+         this->Controls->Add(this->gamePlayScreen);
+         this->Controls->Add(this->menuStrip1);
+         this->DoubleBuffered = true;
+         this->MainMenuStrip = this->menuStrip1;
+         this->MaximumSize = System::Drawing::Size(1900, 850);
+         this->MinimumSize = System::Drawing::Size(1900, 850);
+         this->Name = L"GamePlay";
+         this->Text = L"Sea Turtle Showdown";
+         this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+         this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &GamePlay::GamePlay_FormClosed);
+         this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &GamePlay::GamePlay_KeyDown);
+         this->gamePlayScreen->ResumeLayout(false);
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+         this->menuStrip1->ResumeLayout(false);
+         this->menuStrip1->PerformLayout();
+         this->ResumeLayout(false);
+         this->PerformLayout();
+=======
+         this->components = (gcnew System::ComponentModel::Container());
+         System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(GamePlay::typeid));
+         this->gamePlayScreen = (gcnew System::Windows::Forms::Panel());
+         this->amountTrashTracker = (gcnew System::Windows::Forms::ProgressBar());
+         this->healthTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->turtleHealth = (gcnew System::Windows::Forms::ProgressBar());
+         this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+         this->powerupTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->trashTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->powerUpMoveTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
+         this->mainMenuToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+         this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+         this->keyPressTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->speedQty = (gcnew System::Windows::Forms::TextBox());
+         this->pictureBox2 = (gcnew System::Windows::Forms::PictureBox());
+         this->negativePowerLabel = (gcnew System::Windows::Forms::Label());
+         this->maxLabel = (gcnew System::Windows::Forms::Label());
+         this->gamePlayScreen->SuspendLayout();
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+         this->menuStrip1->SuspendLayout();
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->BeginInit();
+         this->SuspendLayout();
+         // 
+         // gamePlayScreen
+         // 
+         this->gamePlayScreen->AutoSize = true;
+         this->gamePlayScreen->BackColor = System::Drawing::Color::Transparent;
+         this->gamePlayScreen->Controls->Add(this->amountTrashTracker);
+         this->gamePlayScreen->Location = System::Drawing::Point(10, 47);
+         this->gamePlayScreen->MaximumSize = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->MinimumSize = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->Name = L"gamePlayScreen";
+         this->gamePlayScreen->Size = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->TabIndex = 0;
+         this->gamePlayScreen->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &GamePlay::gamePlayScreen_Paint);
+         // 
+         // amountTrashTracker
+         // 
+         this->amountTrashTracker->BackColor = System::Drawing::SystemColors::Control;
+         this->amountTrashTracker->Location = System::Drawing::Point(1714, 726);
+         this->amountTrashTracker->Name = L"amountTrashTracker";
+         this->amountTrashTracker->Size = System::Drawing::Size(132, 15);
+         this->amountTrashTracker->TabIndex = 1;
+         // 
+         // healthTimer
+         // 
+         this->healthTimer->Enabled = true;
+         this->healthTimer->Interval = 1200;
+         this->healthTimer->Tick += gcnew System::EventHandler(this, &GamePlay::healthTimer_Tick);
+         // 
+         // turtleHealth
+         // 
+         this->turtleHealth->BackColor = System::Drawing::SystemColors::Control;
+         this->turtleHealth->Location = System::Drawing::Point(270, 13);
+         this->turtleHealth->Name = L"turtleHealth";
+         this->turtleHealth->Size = System::Drawing::Size(142, 23);
+         this->turtleHealth->TabIndex = 1;
+         this->turtleHealth->Value = 100;
+         // 
+         // pictureBox1
+         // 
+         this->pictureBox1->BackColor = System::Drawing::Color::Transparent;
+         this->pictureBox1->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox1.BackgroundImage")));
+         this->pictureBox1->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->pictureBox1->Location = System::Drawing::Point(226, 9);
+         this->pictureBox1->Name = L"pictureBox1";
+         this->pictureBox1->Size = System::Drawing::Size(40, 32);
+         this->pictureBox1->TabIndex = 2;
+         this->pictureBox1->TabStop = false;
+         // 
+         // powerupTimer
+         // 
+         this->powerupTimer->Enabled = true;
+         this->powerupTimer->Interval = 3000;
+         this->powerupTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerupTimer_Tick);
+         // 
+         // trashTimer
+         // 
+         this->trashTimer->Enabled = true;
+         this->trashTimer->Interval = 3000;
+         this->trashTimer->Tick += gcnew System::EventHandler(this, &GamePlay::trashTimer_Tick);
+         // 
+         // bonusMoveTimer
+         // 
+         this->bonusMoveTimer->Enabled = true;
+         this->bonusMoveTimer->Tick += gcnew System::EventHandler(this, &GamePlay::bonusMoveTimer_Tick);
+         // 
+         // menuStrip1
+         // 
+         this->menuStrip1->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+         this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
+         this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+            this->mainMenuToolStripMenuItem,
+               this->helpToolStripMenuItem
+         });
+         this->menuStrip1->Location = System::Drawing::Point(0, 0);
+         this->menuStrip1->Name = L"menuStrip1";
+         this->menuStrip1->Size = System::Drawing::Size(1882, 31);
+         this->menuStrip1->TabIndex = 3;
+         this->menuStrip1->Text = L"menuStrip1";
+         // 
+         // mainMenuToolStripMenuItem
+         // 
+         this->mainMenuToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+            static_cast<System::Byte>(0)));
+         this->mainMenuToolStripMenuItem->Name = L"mainMenuToolStripMenuItem";
+         this->mainMenuToolStripMenuItem->Size = System::Drawing::Size(109, 27);
+         this->mainMenuToolStripMenuItem->Text = L"Main Menu";
+         this->mainMenuToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::mainMenuToolStripMenuItem_Click);
+         // 
+         // helpToolStripMenuItem
+         // 
+         this->helpToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+            static_cast<System::Byte>(0)));
+         this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
+         this->helpToolStripMenuItem->Size = System::Drawing::Size(57, 27);
+         this->helpToolStripMenuItem->Text = L"Help";
+         this->helpToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::helpToolStripMenuItem_Click);
+         // 
+         // keyPressTimer
+         // 
+         this->keyPressTimer->Enabled = true;
+         this->keyPressTimer->Interval = 1;
+         this->keyPressTimer->Tick += gcnew System::EventHandler(this, &GamePlay::keyPressTimer_Tick);
+         // 
+         // speedQty
+         // 
+         this->speedQty->Enabled = false;
+         this->speedQty->Location = System::Drawing::Point(482, 14);
+         this->speedQty->Name = L"speedQty";
+         this->speedQty->ReadOnly = true;
+         this->speedQty->Size = System::Drawing::Size(22, 22);
+         this->speedQty->TabIndex = 4;
+         this->speedQty->Text = L"0";
+         this->speedQty->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
+         // 
+         // pictureBox2
+         // 
+         this->pictureBox2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox2.BackgroundImage")));
+         this->pictureBox2->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->pictureBox2->Location = System::Drawing::Point(436, 9);
+         this->pictureBox2->Name = L"pictureBox2";
+         this->pictureBox2->Size = System::Drawing::Size(40, 32);
+         this->pictureBox2->TabIndex = 5;
+         this->pictureBox2->TabStop = false;
+         // 
+         // negativePowerLabel
+         // 
+         this->negativePowerLabel->AutoSize = true;
+         this->negativePowerLabel->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+         this->negativePowerLabel->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+         this->negativePowerLabel->Enabled = false;
+         this->negativePowerLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.2F, System::Drawing::FontStyle::Regular,
+            System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+         this->negativePowerLabel->Location = System::Drawing::Point(521, 14);
+         this->negativePowerLabel->Name = L"negativePowerLabel";
+         this->negativePowerLabel->Size = System::Drawing::Size(294, 22);
+         this->negativePowerLabel->TabIndex = 6;
+         this->negativePowerLabel->Text = L"There are no more powerups to apply!";
+         this->negativePowerLabel->Visible = false;
+         // 
+         // maxLabel
+         // 
+         this->maxLabel->AutoSize = true;
+         this->maxLabel->BackColor = System::Drawing::SystemColors::GradientInactiveCaption;
+         this->maxLabel->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+         this->maxLabel->Enabled = false;
+         this->maxLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+            static_cast<System::Byte>(0)));
+         this->maxLabel->Location = System::Drawing::Point(522, 14);
+         this->maxLabel->Name = L"maxLabel";
+         this->maxLabel->Size = System::Drawing::Size(182, 22);
+         this->maxLabel->TabIndex = 7;
+         this->maxLabel->Text = L"Max powerups applied!\r\n";
+         this->maxLabel->Visible = false;
+         // 
+         // GamePlay
+         // 
+         this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+         this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+         this->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+         this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->ClientSize = System::Drawing::Size(1882, 803);
+         this->Controls->Add(this->maxLabel);
+         this->Controls->Add(this->negativePowerLabel);
+         this->Controls->Add(this->pictureBox2);
+         this->Controls->Add(this->speedQty);
+         this->Controls->Add(this->pictureBox1);
+         this->Controls->Add(this->turtleHealth);
+         this->Controls->Add(this->gamePlayScreen);
+         this->Controls->Add(this->menuStrip1);
+         this->DoubleBuffered = true;
+         this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
+         this->MainMenuStrip = this->menuStrip1;
+         this->MaximumSize = System::Drawing::Size(1900, 850);
+         this->MinimumSize = System::Drawing::Size(1900, 850);
+         this->Name = L"GamePlay";
+         this->Text = L"Sea Turtle Showdown";
+         this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+         this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &GamePlay::GamePlay_FormClosed);
+         this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &GamePlay::GamePlay_KeyDown);
+         this->gamePlayScreen->ResumeLayout(false);
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+         this->menuStrip1->ResumeLayout(false);
+         this->menuStrip1->PerformLayout();
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->EndInit();
+         this->ResumeLayout(false);
+         this->PerformLayout();
+>>>>>>> .r88355
+=======
+         this->components = (gcnew System::ComponentModel::Container());
+         System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(GamePlay::typeid));
+         this->gamePlayScreen = (gcnew System::Windows::Forms::Panel());
+         this->amountTrashTracker = (gcnew System::Windows::Forms::ProgressBar());
+         this->healthTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->turtleHealth = (gcnew System::Windows::Forms::ProgressBar());
+         this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
+         this->powerupTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->trashTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->powerUpMoveTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
+         this->mainMenuToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+         this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+         this->keyPressTimer = (gcnew System::Windows::Forms::Timer(this->components));
+         this->gamePlayScreen->SuspendLayout();
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+         this->menuStrip1->SuspendLayout();
+         this->SuspendLayout();
+         // 
+         // gamePlayScreen
+         // 
+         this->gamePlayScreen->AutoSize = true;
+         this->gamePlayScreen->BackColor = System::Drawing::Color::Transparent;
+         this->gamePlayScreen->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->gamePlayScreen->Controls->Add(this->amountTrashTracker);
+         this->gamePlayScreen->Location = System::Drawing::Point(10, 47);
+         this->gamePlayScreen->MaximumSize = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->MinimumSize = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->Name = L"gamePlayScreen";
+         this->gamePlayScreen->Size = System::Drawing::Size(1858, 744);
+         this->gamePlayScreen->TabIndex = 0;
+         this->gamePlayScreen->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &GamePlay::gamePlayScreen_Paint);
+         // 
+         // amountTrashTracker
+         // 
+         this->amountTrashTracker->BackColor = System::Drawing::SystemColors::Control;
+         this->amountTrashTracker->Location = System::Drawing::Point(1714, 726);
+         this->amountTrashTracker->Name = L"amountTrashTracker";
+         this->amountTrashTracker->Size = System::Drawing::Size(132, 15);
+         this->amountTrashTracker->TabIndex = 1;
+         // 
+         // healthTimer
+         // 
+         this->healthTimer->Enabled = true;
+         this->healthTimer->Interval = 800;
+         this->healthTimer->Tick += gcnew System::EventHandler(this, &GamePlay::healthTimer_Tick);
+         // 
+         // turtleHealth
+         // 
+         this->turtleHealth->BackColor = System::Drawing::SystemColors::Control;
+         this->turtleHealth->Location = System::Drawing::Point(270, 13);
+         this->turtleHealth->Name = L"turtleHealth";
+         this->turtleHealth->Size = System::Drawing::Size(142, 23);
+         this->turtleHealth->TabIndex = 1;
+         this->turtleHealth->Value = 100;
+         // 
+         // pictureBox1
+         // 
+         this->pictureBox1->BackColor = System::Drawing::Color::Transparent;
+         this->pictureBox1->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox1.BackgroundImage")));
+         this->pictureBox1->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->pictureBox1->Location = System::Drawing::Point(226, 9);
+         this->pictureBox1->Name = L"pictureBox1";
+         this->pictureBox1->Size = System::Drawing::Size(40, 32);
+         this->pictureBox1->TabIndex = 2;
+         this->pictureBox1->TabStop = false;
+         // 
+         // powerupTimer
+         // 
+         this->powerupTimer->Enabled = true;
+         this->powerupTimer->Interval = 3000;
+         this->powerupTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerupTimer_Tick);
+         // 
+         // trashTimer
+         // 
+         this->trashTimer->Enabled = true;
+         this->trashTimer->Interval = 2000;
+         this->trashTimer->Tick += gcnew System::EventHandler(this, &GamePlay::trashTimer_Tick);
+         // 
+         // powerUpMoveTimer
+         // 
+         this->powerUpMoveTimer->Enabled = true;
+         this->powerUpMoveTimer->Tick += gcnew System::EventHandler(this, &GamePlay::powerUpMoveTimer_Tick);
+         // 
+         // menuStrip1
+         // 
+         this->menuStrip1->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+         this->menuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
+         this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+            this->mainMenuToolStripMenuItem,
+               this->helpToolStripMenuItem
+         });
+         this->menuStrip1->Location = System::Drawing::Point(0, 0);
+         this->menuStrip1->Name = L"menuStrip1";
+         this->menuStrip1->Size = System::Drawing::Size(1882, 31);
+         this->menuStrip1->TabIndex = 3;
+         this->menuStrip1->Text = L"menuStrip1";
+         // 
+         // mainMenuToolStripMenuItem
+         // 
+         this->mainMenuToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+            static_cast<System::Byte>(0)));
+         this->mainMenuToolStripMenuItem->Name = L"mainMenuToolStripMenuItem";
+         this->mainMenuToolStripMenuItem->Size = System::Drawing::Size(109, 27);
+         this->mainMenuToolStripMenuItem->Text = L"Main Menu";
+         this->mainMenuToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::mainMenuToolStripMenuItem_Click);
+         // 
+         // helpToolStripMenuItem
+         // 
+         this->helpToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Segoe UI", 10.2F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+            static_cast<System::Byte>(0)));
+         this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
+         this->helpToolStripMenuItem->Size = System::Drawing::Size(57, 27);
+         this->helpToolStripMenuItem->Text = L"Help";
+         this->helpToolStripMenuItem->Click += gcnew System::EventHandler(this, &GamePlay::helpToolStripMenuItem_Click);
+         // 
+         // keyPressTimer
+         // 
+         this->keyPressTimer->Enabled = true;
+         this->keyPressTimer->Interval = 1;
+         this->keyPressTimer->Tick += gcnew System::EventHandler(this, &GamePlay::keyPressTimer_Tick);
+         // 
+         // GamePlay
+         // 
+         this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+         this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+         this->BackColor = System::Drawing::SystemColors::GradientActiveCaption;
+         this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+         this->ClientSize = System::Drawing::Size(1882, 803);
+         this->Controls->Add(this->pictureBox1);
+         this->Controls->Add(this->turtleHealth);
+         this->Controls->Add(this->gamePlayScreen);
+         this->Controls->Add(this->menuStrip1);
+         this->DoubleBuffered = true;
+         this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
+         this->MainMenuStrip = this->menuStrip1;
+         this->MaximumSize = System::Drawing::Size(1900, 850);
+         this->MinimumSize = System::Drawing::Size(1900, 850);
+         this->Name = L"GamePlay";
+         this->Text = L"Sea Turtle Showdown";
+         this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
+         this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &GamePlay::GamePlay_FormClosed);
+         this->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &GamePlay::GamePlay_KeyDown);
+         this->gamePlayScreen->ResumeLayout(false);
+         (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+         this->menuStrip1->ResumeLayout(false);
+         this->menuStrip1->PerformLayout();
+         this->ResumeLayout(false);
+         this->PerformLayout();
+>>>>>>> .r88457
+
+      }
+#pragma endregion
+   //------------------------------------------------------------------------------------------------------------------
+   // Arrow Keys Event Handler
+   // Key definitions: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=net-5.0
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void GamePlay_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) 
+   {
+      negativePowerLabel->Visible = false;
+      maxLabel->Visible = false;
+
+      //Move the turtle according to arrow key press or enable powerup
+      if (!keyDown)
+      {
+         keyDown = true;
+<<<<<<< .mine
+         switch (e->KeyCode)
+         {
+<<<<<<< .mine
+             //TODO: After applying the powerup the quantity is not decreasing. powerUpQty needs to equal to speedQTY.
+            turtle->increaseSpeed();
+            powerUpQty--;
+            turtle->increaseSpeed();
+            powerUpQty--;
+||||||| .r88412
+<<<<<<< .mine
+             //TODO: After applying the powerup the quantity is not decreasing. powerUpQty needs to equal to speedQTY.
+            turtle->increaseSpeed();
+            powerUpQty--;
+||||||| .r88353
+            turtle->increaseSpeed();
+            powerUpQty--;
+=======
+=======
+>>>>>>> .r88457
+         case Keys::Up:
+||||||| .r88602
+         switch (e->KeyCode)
+         {
+         case Keys::Up:
+=======
+         if(e->KeyCode == Keys::Up)
+<<<<<<< .mine
+>>>>>>> .r88657
+            turtle->moveTurtle(0);
+||||||| .r88657
+            turtle->moveTurtle(0);
+=======
+            turtle->moveTurtle(UP_KEY_VAL);
+>>>>>>> .r88695
+         else if (e->KeyCode == Keys::Down)
+            turtle->moveTurtle(DN_KEY_VAL);
+         else if(e->KeyCode == Keys::Left)
+            turtle->moveTurtle(LFT_KEY_VAL);
+         else if(e->KeyCode == Keys::Right)
+            turtle->moveTurtle(RT_KEY_VAL);
+         else if (e->KeyCode == Keys::D1)
+         {
+            //Show message for no more powerups
+            if (bonusList->getBonus1Qty() == 0)
+               negativePowerLabel->Visible = true;
+            //Increase turtle speed and display max speed label if appropriate
+            if (bonusList->getBonus1Qty() > 0)
+            {
+               turtle->increaseSpeed(maxLabel);
+               if(maxLabel->Visible != true)
+                  bonusList->bonus1QtyDecrease(speedQty);
+            }
+         }
+
+         //Check for a collision and update health, powerup qty, and trash qty
+         turtleHealth->Value = bonusList->collideWithPlayer(turtle, turtleHealth->Value, speedQty);
+         checkHealth();
+         if (trashCanQty < bonusList->getBonus2Qty())
+            this->amountTrashTracker->Increment(TRASH_INCREMENT);
+         trashCanQty = bonusList->getBonus2Qty();
+         if (amountTrashTracker->Value == amountTrashTracker->Maximum)
+         {
+            amountTrashTracker->Increment(amountTrashTracker->Maximum * (-1));
+            for (int i = 0; i < NUM_BONUS_LOOP; i++)
+            {
+               int xPos = BONUS_X_LOW_BOUND + (rand() % (BONUS_X_UP_BOUND - BONUS_X_LOW_BOUND)) + 1;
+               bonus = new PowerUp(xPos, 0, gamePlayScreen);
+               bonusList->pushBack(bonus);
+            }
+         }
+
+         //Update panel so that collected bonus items don't appear
+         gamePlayScreen->Invalidate();
+
+         //Check if turtle is free after moving
+         if (turtle->isFree())
+         {
+            disableTimers();
+            //Display winning message and return to the Main Menu
+            MessageBox::Show("Yaaay! I will find my mom in the ocean!");
+            Close();
+         }
+      }
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Paint Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void gamePlayScreen_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) 
+   {
+      //Add image to the GamePlayScreen panel 
+      gamePlayScreen->BackgroundImage = beachImage;
+      gamePlayScreen->BackgroundImageLayout = ImageLayout::Stretch;
+
+      //Show the turtle and uncollected bonus items
+      turtle->showTurtle(e->Graphics);
+      bonusList->showList(e->Graphics);
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Health Timer Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void healthTimer_Tick(System::Object^  sender, System::EventArgs^  e)
+   {
+      //Check and update turtle health with each health bar tick
+      if (turtleHealth->Value - NEG_HEALTH_RATE >= 0)
+         turtleHealth->Value -= NEG_HEALTH_RATE;
+      checkHealth();
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Powerup Timer Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void powerupTimer_Tick(System::Object^  sender, System::EventArgs^  e) 
+   {
+      if (powerupTimer->Enabled == true)
+      {
+         int POWERUP_TYPE = 1;
+         int xPos = BONUS_X_LOW_BOUND + (rand() % (BONUS_X_UP_BOUND - BONUS_X_LOW_BOUND)) + 1;
+         bonus = new PowerUp(xPos, 0, gamePlayScreen);
+         bonusList->pushBack(bonus);
+      }
+
+      gamePlayScreen->Invalidate();
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Trash Timer Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void trashTimer_Tick(System::Object^  sender, System::EventArgs^  e) 
+   {
+      int trashCollected = 0;
+      int trashCreate = TRASH_COUNT_MIN + (rand() % (TRASH_COUNT_MAX - TRASH_COUNT_MIN)) + 1;
+      if (trashTimer->Enabled == true && trashCollected <= trashCreate)
+      {
+         int xPos = BONUS_X_LOW_BOUND + (rand() % (BONUS_X_UP_BOUND - BONUS_X_LOW_BOUND)) + 1;
+         int yPos = rand() % (gamePlayScreen->Height - BONUS_Y_LOW_BOUND)+ 1;
+         bonus = new Trash(xPos, yPos, gamePlayScreen);
+         bonusList->pushBack(bonus);
+         trashCollected++;
+      }
+      gamePlayScreen->Invalidate();
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Move Bonus Timer Event Handler
+   // This timer will move all objects in the bonusList, including the predators
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void bonusMoveTimer_Tick(System::Object^  sender, System::EventArgs^  e) 
+   {
+      //Move items in list, then check for a collision and update health
+      bonusList->moveList();
+      turtleHealth->Value = bonusList->collideWithPlayer(turtle, turtleHealth->Value, speedQty);
+      checkHealth();
+      gamePlayScreen->Invalidate();
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Key Press Timer Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void keyPressTimer_Tick(System::Object^  sender, System::EventArgs^  e)
+   {
+      //Update flag for Key Down event handler
+      keyDown = false;
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Help Option Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void helpToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
+   {
+      //Stop the timers - pause the game
+      healthTimer->Stop();
+      powerupTimer->Stop();
+      bonusMoveTimer->Stop();
+      trashTimer->Stop();
+
+      // Display the Help Form
+      HelpForm^ f = gcnew HelpForm();
+      f->ShowDialog();
+
+      if (sender != nullptr)
+      { 
+         healthTimer->Start();
+         powerupTimer->Start();
+         bonusMoveTimer->Start();
+         trashTimer->Start();
+      }
+
+      //Delete the Help Form
+      delete f;
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Main Menu Option Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void mainMenuToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) 
+   {
+      Close();
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Disable Timers Function
+   //------------------------------------------------------------------------------------------------------------------
+   private: void disableTimers()
+   {
+      healthTimer->Enabled = false;
+      trashTimer->Enabled = false;
+      powerupTimer->Enabled = false;
+      bonusMoveTimer->Enabled = false;
+      keyPressTimer->Enabled = false;
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Check Health Function
+   //------------------------------------------------------------------------------------------------------------------
+   private: void checkHealth()
+   {
+      //End game when turtle has lost all health
+      if (turtleHealth->Value <= 0)
+      {
+         disableTimers();
+
+         //Display losing message and return to the Main Menu
+         MessageBox::Show("You lose! Try Again!");
+         Close();
+      }
+   }
+   //------------------------------------------------------------------------------------------------------------------
+   // Form Closed Event Handler
+   //------------------------------------------------------------------------------------------------------------------
+   private: System::Void GamePlay_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e)
+   {
+      //Disable all the timers
+      disableTimers();
+
+      //Stop sound effects
+      oceanSound->Stop();
+
+      if (sender != nullptr)
+      {
+         delete sender;
+         _CrtDumpMemoryLeaks();
+         this->Close();
+      }
+   }
+};
+}

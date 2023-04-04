@@ -1,0 +1,22 @@
+﻿  Bonus.cpp
+  BonusList.cpp
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\BonusList.cpp(29,4): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\BonusList.cpp(37,4): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\BonusList.cpp(64,4): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\BonusList.cpp(89,4): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  BonusObjects.cpp
+  GamePlay.cpp
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\GamePlay.h(40,20): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  HelpForm.cpp
+  theMainMenu.cpp
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\TurtleSettings.h(205,1): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\GamePlay.h(40,20): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Turtle.cpp
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\Turtle.cpp(25,32): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\Turtle.cpp(26,38): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  TurtleSettings.cpp
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\TurtleSettings.h(205,1): warning C4305: 'initializing': truncation from 'double' to 'float'
+  .NETFramework,Version=v4.6.1.AssemblyAttributes.cpp
+  Generating Code...
+  Bonus.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  SeaTurtleShowdown.vcxproj -> C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.exe

@@ -1,0 +1,8 @@
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.vcxprojAssemblyReference.cache
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.GamePlay.resources
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.HelpForm.resources
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.theMainMenu.resources
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.TurtleSettings.resources
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.vcxproj.GenerateResource.cache
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.exe
+C:\Users\huxue\OneDrive\Desktop\SE2730_Team2\x64\Debug\SeaTurtleShowdown.pdb

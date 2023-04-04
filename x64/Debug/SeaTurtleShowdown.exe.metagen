@@ -1,0 +1,47 @@
+  SeaTurtleShowdown.GamePlay.resources - Embedded, ContainedInManifestFile, 
+  SeaTurtleShowdown.HelpForm.resources - Embedded, ContainedInManifestFile, 
+  SeaTurtleShowdown.theMainMenu.resources - Embedded, ContainedInManifestFile, 
+  SeaTurtleShowdown.TurtleSettings.resources - Embedded, ContainedInManifestFile, 
+ImageRuntimeVersion: v4.0.30319
+Assembly SeaTurtleShowdown, Version=0.0.*, Culture=Invariant Language (Invariant Country): 
+	hash=SHA1, flags=PublicKey
+Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a: 
+	hash=None, flags=None
+Assembly System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Class MyPanel: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Panel
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Methods:
+    SetStyle(ControlStyles, Boolean(HasFieldMarshal)): PrivateScope, Public, HideBySig
+Class SeaTurtleShowdown.HelpForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+Class SeaTurtleShowdown.GamePlay: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(Single, Int32): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+Class SeaTurtleShowdown.TurtleSettings: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    Single size : Public
+    Int32 selection : Public
+  Methods:
+    getSize(): PrivateScope, Public, HideBySig
+    getSelection(): PrivateScope, Public, HideBySig
+Class SeaTurtleShowdown.theMainMenu: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    Single turtleSize : Public
+    Int32 turtleSelect : Public
+    Single DEFAULT_TURTLE_SIZE IsConst : Public
+    Int32 DEFAULT_TURTLE_SELECT IsConst : Public
