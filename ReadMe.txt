@@ -1,4 +1,5 @@
 This program was designed using Visual Studio 2017. You may need to update the Solution in order to build it on a newer version.
+To view the Demo of the applicaiton: https://youtu.be/vMcw1BDwOZk
 
 To play Sea Turtle Showdown, open the "Sea Turtle Showdown Executable" folder.
 Verify the following items are in that folder:
@@ -28,6 +29,5 @@ After the gameplay screen has appeared, a health timer will immediately begin co
 Use the arrow keys to race the turtle to the Water (Blue Line) before you run out of health.
 You will notice the appearance of trash and powerups. These items are not yet functional.
 
-
-In regards to a large portion of unlogged SVN commits, this was due to troubleshooting the difference in Visual Studio versions.
-SVN commits: 87907 - 87910
+Author: Xueting Hu, Callie Seehafer, Megan Baxter, and Hannah Secker.
+This application is for educational purpose, therefore, any modification is closed to public. 
